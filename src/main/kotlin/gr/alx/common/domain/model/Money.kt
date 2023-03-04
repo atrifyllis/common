@@ -1,6 +1,5 @@
 package gr.alx.common.domain.model
 
-import gr.alx.common.model.Default
 import jakarta.persistence.Embeddable
 import org.jmolecules.ddd.annotation.ValueObject
 import java.math.BigDecimal

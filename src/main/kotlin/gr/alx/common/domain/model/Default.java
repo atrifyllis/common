@@ -1,4 +1,4 @@
-package gr.alx.common.model;
+package gr.alx.common.domain.model;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
