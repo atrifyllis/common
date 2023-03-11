@@ -10,7 +10,4 @@ import org.jmolecules.ddd.types.Identifier
  * Extends from jmolecules class for future use.
  */
 
-abstract class BaseAggregate<T : AggregateRoot<T, ID>, ID : Identifier> : AggregateRoot<T, ID> {
-
-
-}
+abstract class BaseAggregate<T : AggregateRoot<T, ID>, ID : Identifier> : AggregateRoot<T, ID>

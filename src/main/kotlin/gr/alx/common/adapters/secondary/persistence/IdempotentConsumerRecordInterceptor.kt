@@ -16,7 +16,7 @@ const val EVENT_ID_HEADER = "eventId"
  * If it fails, it means that this is a duplicate so no processing is done.
  */
 @Component
-open class IdempotentConsumerRecordInterceptor<T>(
+class IdempotentConsumerRecordInterceptor<T>(
     @PersistenceContext val em: EntityManager,
 ) : RecordInterceptor<String, T> {
 
