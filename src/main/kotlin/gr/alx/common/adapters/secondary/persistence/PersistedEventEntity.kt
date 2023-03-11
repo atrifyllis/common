@@ -1,19 +1,25 @@
-package gr.alx.common.domain.model
+package gr.alx.common.adapters.secondary.persistence
 
 import com.vladmihalcea.hibernate.type.json.JsonType
+import gr.alx.common.domain.model.DomainEvent
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import org.hibernate.annotations.Type
 import java.time.LocalDateTime
 import java.util.*
-import jakarta.persistence.Column
-import jakarta.persistence.EmbeddedId
-import jakarta.persistence.Entity
-import org.hibernate.annotations.Type
 
 @Entity
-class PersistedEvent
+class PersistedEventEntity
     (
+    @Id
+    override var id: UUID,
+
     @Type(JsonType::class)
     @Column(columnDefinition = "json")
     val payload: DomainEvent,
+
+    val occurredOn: LocalDateTime,
 
     val dispatchedOn: LocalDateTime? = null,
 
@@ -22,15 +28,13 @@ class PersistedEvent
 
     @Column(name = "aggregatetype")
     val aggregateType: String,
-) : AbstractAggregateRoot<PersistedEvent, EventId>() {
-    @EmbeddedId
-    override var id: EventId = EventId(UUID.randomUUID())
+) : BaseEntity<UUID>() {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as PersistedEvent
+        other as PersistedEventEntity
 
         if (id != other.id) return false
 
