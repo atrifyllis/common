@@ -1,12 +1,7 @@
 package gr.alx.common.domain.model
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import jakarta.persistence.MappedSuperclass
-import jakarta.persistence.Transient
 import org.jmolecules.ddd.types.AggregateRoot
 import org.jmolecules.ddd.types.Identifier
-import org.springframework.data.domain.AfterDomainEventPublication
-import org.springframework.data.domain.DomainEvents
 import java.util.*
 
 /**
@@ -14,12 +9,9 @@ import java.util.*
  *
  * @param <ID> the aggregate root ID type.
 </ID> */
-@MappedSuperclass
 abstract class AbstractAggregateRoot<T : AggregateRoot<T, ID>, ID : Identifier> protected constructor() :
     BaseAggregate<T, ID>() {
 
-    @Transient
-    @JsonIgnore
     private val domainEvents: MutableList<DomainEvent> = ArrayList()
 
     /**
@@ -36,7 +28,6 @@ abstract class AbstractAggregateRoot<T : AggregateRoot<T, ID>, ID : Identifier> 
     /**
      * Called by the persistence framework to clear all registered domain events once they have been published.
      */
-    @AfterDomainEventPublication
     fun clearDomainEvents() {
         domainEvents.clear()
     }
@@ -45,7 +36,6 @@ abstract class AbstractAggregateRoot<T : AggregateRoot<T, ID>, ID : Identifier> 
      * Returns all domain events that have been registered for publication. Intended to be used by the persistence
      * framework only.
      */
-    @DomainEvents
     fun domainEvents(): Collection<DomainEvent> {
         return Collections.unmodifiableList(domainEvents)
     }

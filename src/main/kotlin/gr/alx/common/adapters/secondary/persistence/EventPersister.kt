@@ -1,7 +1,6 @@
 package gr.alx.common.adapters.secondary.persistence
 
 import gr.alx.common.domain.model.DomainEvent
-import gr.alx.common.domain.model.PersistedEvent
 import org.springframework.stereotype.Component
 
 // TODO
@@ -15,26 +14,28 @@ class EventPersister(val repo: EventRepository) {
 //    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
 //    @Transactional
     fun persistEvent(event: DomainEvent) {
-        val persistedEvent = PersistedEvent(
-            event,
+        val persistedEventEntity = PersistedEventEntity(
+            id = event.eventId.id,
+            occurredOn = event.occurredOn,
+            payload = event,
             aggregateId = event.aggregateId.toString(),
             aggregateType = event.aggregateType
         )
-        repo.save(persistedEvent)
+        repo.save(persistedEventEntity)
         // this trick is used to save space.
-        // the save operation will be recorded by debezium
+        // the save operation will be recorded by debezium,
         // so we can then safely delete the event from our database (if needed)
-        repo.delete(persistedEvent)
+        repo.delete(persistedEventEntity)
     }
 }
 
 @Component
 class EventRepository {
-    fun save(persistedEvent: PersistedEvent) {
+    fun save(persistedEventEntity: PersistedEventEntity) {
         TODO("Not yet implemented")
     }
 
-    fun delete(persistedEvent: PersistedEvent) {
+    fun delete(persistedEventEntity: PersistedEventEntity) {
         TODO("Not yet implemented")
     }
 

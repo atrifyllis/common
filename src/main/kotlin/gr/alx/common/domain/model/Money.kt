@@ -8,7 +8,7 @@ import java.util.*
 
 private const val EUR = "EUR"
 
-@Embeddable
+@Embeddable //TODO we dependent on persistence in domain model which is not good
 @ValueObject
 data class Money @Default constructor(
     var amount: BigDecimal,

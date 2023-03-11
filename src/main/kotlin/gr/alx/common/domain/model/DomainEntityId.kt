@@ -3,17 +3,11 @@ package gr.alx.common.domain.model
 import org.jmolecules.ddd.types.Identifier
 import java.io.Serializable
 import java.util.*
-import jakarta.persistence.Embeddable
-import jakarta.persistence.MappedSuperclass
 
-/**
- * Base class for all Aggregate Root Ids.
- */
-@Embeddable
-@MappedSuperclass
-abstract class DomainEntityId(value: UUID?) : Identifier, Serializable {
 
-    var id: UUID? = value
+abstract class DomainEntityId(value: UUID) : Identifier, Serializable {
+
+    var id: UUID = value
 
     init {
         requireNotNull(value) { "Cannot make an ID from a null value." }

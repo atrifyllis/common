@@ -1,5 +1,6 @@
 package gr.alx.common.adapters.secondary.persistence
 
+import gr.alx.common.domain.model.Enableable
 import jakarta.persistence.Column
 import jakarta.persistence.EntityListeners
 import jakarta.persistence.MappedSuperclass
@@ -17,7 +18,7 @@ import java.time.LocalDateTime
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
-abstract class BaseEntity<ID> : Identifiable<ID> {
+abstract class BaseEntity<ID> : Identifiable<ID>, Enableable {
 
     @Version
     @Column(name = "OPTLOCK")
@@ -38,6 +39,16 @@ abstract class BaseEntity<ID> : Identifiable<ID> {
     @LastModifiedDate
     @Column(name = "last_modified")
     private var lastModifiedDate: LocalDateTime? = null
+
+    override var enabled: Boolean = true
+
+    override fun enable() {
+        enabled = true
+    }
+
+    override fun disable() {
+        enabled = false
+    }
 
     override fun toString(): String {
         return "BaseEntity(version=$version, created=$createdDate)"
