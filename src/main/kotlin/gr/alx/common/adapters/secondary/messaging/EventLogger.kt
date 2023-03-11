@@ -1,4 +1,4 @@
-package gr.alx.common.adapters.secondary.persistence
+package gr.alx.common.adapters.secondary.messaging
 
 import gr.alx.common.domain.model.DomainEvent
 import mu.KotlinLogging
@@ -7,11 +7,14 @@ import org.springframework.transaction.event.TransactionalEventListener
 
 private val log = KotlinLogging.logger {}
 
+
+/**
+ * Logs spring domain events.
+ */
 @Component
 class EventLogger {
 
-    @TransactionalEventListener//(phase = TransactionPhase.BEFORE_COMMIT)
-//    @Transactional
+    @TransactionalEventListener
     fun logEvent(event: DomainEvent) {
         log.info { event }
     }

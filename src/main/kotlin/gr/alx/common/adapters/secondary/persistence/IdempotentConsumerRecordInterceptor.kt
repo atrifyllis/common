@@ -11,6 +11,10 @@ import java.util.*
 
 const val EVENT_ID_HEADER = "eventId"
 
+/**
+ * Intercepts all kafka messages and attempts to persist them in the database using eventId as primary key.
+ * If it fails, it means that this is a duplicate so no processing is done.
+ */
 @Component
 open class IdempotentConsumerRecordInterceptor<T>(
     @PersistenceContext val em: EntityManager,
@@ -18,7 +22,7 @@ open class IdempotentConsumerRecordInterceptor<T>(
 
     /**
      * Use EntityManager to call persist method directly, instead of a JPA repository to avoid updating existing entity.
-     * This way the insert fails for sure.
+     * This way the insert fails for sure if the event is a duplicate.
      */
     @Transactional
     override fun intercept(record: ConsumerRecord<String, T>, consumer: Consumer<String, T>): ConsumerRecord<String, T>? {

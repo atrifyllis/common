@@ -9,6 +9,9 @@ import org.hibernate.annotations.Type
 import java.time.LocalDateTime
 import java.util.*
 
+/**
+ * Used for outbox pattern.
+ */
 @Entity
 class PersistedEventEntity
     (
