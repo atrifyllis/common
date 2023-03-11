@@ -5,6 +5,7 @@ import gr.alx.common.domain.model.DomainEvent
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
+import jakarta.persistence.Table
 import org.hibernate.annotations.Type
 import java.time.LocalDateTime
 import java.util.*
@@ -13,6 +14,7 @@ import java.util.*
  * Used for outbox pattern.
  */
 @Entity
+@Table(name = "persisted_event")
 class PersistedEventEntity
     (
     @Id
@@ -26,10 +28,10 @@ class PersistedEventEntity
 
     val dispatchedOn: LocalDateTime? = null,
 
-    @Column(name = "aggregateid")
+    @Column(name = "aggregate_id")
     val aggregateId: String,
 
-    @Column(name = "aggregatetype")
+    @Column(name = "aggregate_type")
     val aggregateType: String,
 ) : BaseEntity<UUID>() {
 

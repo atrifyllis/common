@@ -28,18 +28,7 @@ class EventPersister(val repo: EventRepository) {
         // this trick is used to save space.
         // the save operation will be recorded by debezium,
         // so we can then safely delete the event from our database (if needed)
-        repo.delete(persistedEventEntity)
+//        repo.delete(persistedEventEntity)
     }
 }
 
-@Component
-class EventRepository {
-    fun save(persistedEventEntity: PersistedEventEntity) {
-        TODO("Not yet implemented")
-    }
-
-    fun delete(persistedEventEntity: PersistedEventEntity) {
-        TODO("Not yet implemented")
-    }
-
-}
