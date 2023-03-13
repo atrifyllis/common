@@ -19,10 +19,11 @@ class EventPersister(val repo: EventRepository) {
     fun persistEvent(event: DomainEvent) {
         val persistedEventEntity = PersistedEventEntity(
             id = event.eventId.id,
-            occurredOn = event.occurredOn,
-            payload = event,
             aggregateId = event.aggregateId.toString(),
-            aggregateType = event.aggregateType
+            aggregateType = event.aggregateType,
+            payload = event,
+            type = event.type,
+            occurredOn = event.occurredOn,
         )
         repo.save(persistedEventEntity)
         // this trick is used to save space.

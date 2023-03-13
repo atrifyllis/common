@@ -20,6 +20,15 @@ class PersistedEventEntity
     @Id
     override var id: UUID,
 
+    @Column(name = "aggregatetype")
+    val aggregateType: String,
+
+    @Column(name = "aggregateid")
+    val aggregateId: String,
+
+    @Column(name = "type")
+    val type: String,
+
     @Type(JsonType::class)
     @Column(columnDefinition = "json")
     val payload: DomainEvent,
@@ -28,12 +37,8 @@ class PersistedEventEntity
 
     val dispatchedOn: LocalDateTime? = null,
 
-    @Column(name = "aggregate_id")
-    val aggregateId: String,
 
-    @Column(name = "aggregate_type")
-    val aggregateType: String,
-) : BaseEntity<UUID>() {
+    ) : BaseEntity<UUID>() {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
