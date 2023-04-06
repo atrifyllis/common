@@ -1,7 +1,7 @@
 package gr.alx.common.adapters.secondary.persistence
 
-import com.vladmihalcea.hibernate.type.json.JsonType
 import gr.alx.common.domain.model.DomainEvent
+import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
@@ -15,30 +15,28 @@ import java.util.*
  */
 @Entity
 @Table(name = "persisted_event")
-class PersistedEventEntity
-    (
-    @Id
-    override var id: UUID,
+class PersistedEventEntity(
 
-    @Column(name = "aggregatetype")
-    val aggregateType: String,
+        @Id
+        override var id: UUID,
 
-    @Column(name = "aggregateid")
-    val aggregateId: String,
+        @Column(name = "aggregatetype")
+        val aggregateType: String,
 
-    @Column(name = "type")
-    val type: String,
+        @Column(name = "aggregateid")
+        val aggregateId: String,
 
-    @Type(JsonType::class)
-    @Column(columnDefinition = "json")
-    val payload: DomainEvent,
+        @Column(name = "type")
+        val type: String,
 
-    val occurredOn: LocalDateTime,
+        @Type(JsonType::class)
+        @Column(columnDefinition = "json")
+        val payload: DomainEvent,
 
-    val dispatchedOn: LocalDateTime? = null,
+        val occurredOn: LocalDateTime,
 
-
-    ) : BaseEntity<UUID>() {
+        val dispatchedOn: LocalDateTime? = null,
+) : BaseEntity<UUID>() {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

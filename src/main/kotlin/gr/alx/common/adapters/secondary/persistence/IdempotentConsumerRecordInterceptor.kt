@@ -17,7 +17,7 @@ const val EVENT_ID_HEADER = "eventId"
  */
 @Component
 class IdempotentConsumerRecordInterceptor<T>(
-    @PersistenceContext val em: EntityManager,
+        @PersistenceContext val em: EntityManager,
 ) : RecordInterceptor<String, T> {
 
     /**
@@ -26,13 +26,12 @@ class IdempotentConsumerRecordInterceptor<T>(
      */
     @Transactional
     override fun intercept(record: ConsumerRecord<String, T>, consumer: Consumer<String, T>): ConsumerRecord<String, T>? {
-        val eventId = extractHeader(record, EVENT_ID_HEADER)
-        em.persist(ProcessedEventEntity(UUID.fromString(eventId)))
+        // TODO should we actually not save the event that does no thave event id?
+        extractHeader(record, EVENT_ID_HEADER)?.let { em.persist(ProcessedEventEntity(UUID.fromString(it))) }
         return record
     }
 
-    private fun extractHeader(record: ConsumerRecord<String, T>, headerName: String) =
-        (record.headers().lastHeader(headerName)?.value()?.toString(Charsets.UTF_8)
-            ?: throw IllegalStateException())
+    private fun extractHeader(record: ConsumerRecord<String, T>, headerName: String): String? =
+            record.headers().lastHeader(headerName)?.value()?.toString(Charsets.UTF_8)
 }
 
