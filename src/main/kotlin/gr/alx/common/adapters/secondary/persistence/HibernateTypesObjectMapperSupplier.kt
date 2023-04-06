@@ -1,7 +1,7 @@
 package gr.alx.common.adapters.secondary.persistence
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.vladmihalcea.hibernate.type.util.ObjectMapperSupplier
+import io.hypersistence.utils.hibernate.type.util.ObjectMapperSupplier
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.stereotype.Component
@@ -11,8 +11,7 @@ import org.springframework.stereotype.Component
  * Needed to serialize LocalDateTime correctly.
  */
 class HibernateTypesObjectMapperSupplier : ObjectMapperSupplier {
-    override fun get(): ObjectMapper =
-        ObjectMapperHolder.objectMapper
+    override fun get(): ObjectMapper = ObjectMapperHolder.objectMapper
 }
 
 /**
