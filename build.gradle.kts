@@ -36,9 +36,16 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.kafka:spring-kafka")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
 
 
-
+    implementation("io.micrometer:micrometer-registry-prometheus")
+    implementation(libs.micrometerDatasource)
+    implementation(libs.bundles.micrometerTracing)
+    // For Latency Visualization
+    implementation("io.zipkin.reporter2:zipkin-reporter-brave")
+    
 
     implementation(libs.bundles.jmolecules)
     implementation(libs.kotlinLogging)
