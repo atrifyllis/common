@@ -1,14 +1,19 @@
 package gr.alx.common.adapters.secondary.persistence
 
 import gr.alx.common.domain.model.DomainEvent
+import io.micrometer.tracing.TraceContext
+import io.micrometer.tracing.Tracer
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
+import java.io.StringWriter
+import java.util.*
+
 
 // TODO
 @Component
-class EventPersister(val repo: EventRepository) {
+class EventPersister(val repo: EventRepository, val tracer: Tracer) {
 
     /**
      * We want the events to be persisted in the same transaction that initiated the event,
@@ -24,6 +29,7 @@ class EventPersister(val repo: EventRepository) {
             payload = event,
             type = event.type,
             occurredOn = event.occurredOn,
+            tracingSpanContext = tracer.currentTraceContext().context().toProperties()
         )
         repo.save(persistedEventEntity)
         // this trick is used to save space.
@@ -31,5 +37,19 @@ class EventPersister(val repo: EventRepository) {
         // so we can then safely delete the event from our database (if needed)
 //        repo.delete(persistedEventEntity)
     }
+}
+
+private fun TraceContext?.toProperties(): String {
+    val properties = Properties()
+    properties.setProperty("traceId", this?.traceId())
+    properties.setProperty("spanId", this?.spanId())
+    StringWriter().use { sw ->
+        properties.store(sw, null)
+        val toString = sw.toString()
+        println("writer: $toString")
+        println("toString: ${properties.toString()}")
+        return toString
+    }
+
 }
 

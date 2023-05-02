@@ -17,25 +17,28 @@ import java.util.*
 @Table(name = "persisted_event")
 class PersistedEventEntity(
 
-        @Id
-        override var id: UUID,
+    @Id
+    override var id: UUID,
 
-        @Column(name = "aggregatetype")
-        val aggregateType: String,
+    @Column(name = "aggregatetype")
+    val aggregateType: String,
 
-        @Column(name = "aggregateid")
-        val aggregateId: String,
+    @Column(name = "aggregateid")
+    val aggregateId: String,
 
-        @Column(name = "type")
-        val type: String,
+    @Column(name = "type")
+    val type: String,
 
-        @Type(JsonType::class)
-        @Column(columnDefinition = "json")
-        val payload: DomainEvent,
+    @Type(JsonType::class)
+    @Column(columnDefinition = "json")
+    val payload: DomainEvent,
 
-        val occurredOn: LocalDateTime,
+    val occurredOn: LocalDateTime,
 
-        val dispatchedOn: LocalDateTime? = null,
+    val dispatchedOn: LocalDateTime? = null,
+
+    @Column(name = "tracingspancontext")
+    val tracingSpanContext: String
 ) : BaseEntity<UUID>() {
 
     override fun equals(other: Any?): Boolean {
