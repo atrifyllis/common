@@ -16,6 +16,6 @@ class EventLogger {
 
     @TransactionalEventListener
     fun logEvent(event: DomainEvent) {
-        log.info { event }
+        log.trace { event }
     }
 }

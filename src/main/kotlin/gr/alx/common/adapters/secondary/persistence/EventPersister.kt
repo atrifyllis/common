@@ -29,7 +29,7 @@ class EventPersister(val repo: EventRepository, val tracer: Tracer) {
             payload = event,
             type = event.type,
             occurredOn = event.occurredOn,
-            tracingSpanContext = tracer.currentTraceContext().context().toProperties()
+            tracingSpanContext = tracer.currentTraceContext().context().toTraceParentHeader()
         )
         repo.save(persistedEventEntity)
         // this trick is used to save space.
@@ -37,6 +37,15 @@ class EventPersister(val repo: EventRepository, val tracer: Tracer) {
         // so we can then safely delete the event from our database (if needed)
 //        repo.delete(persistedEventEntity)
     }
+}
+
+/**
+ * Format the trace ID and span ID as a "traceparent" header.
+ */
+private fun TraceContext?.toTraceParentHeader(): String {
+    val traceId = this?.traceId()
+    val spanId = this?.spanId()
+    return "00-$traceId-$spanId-01";
 }
 
 private fun TraceContext?.toProperties(): String {
