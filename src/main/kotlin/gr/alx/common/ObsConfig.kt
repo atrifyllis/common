@@ -1,11 +1,15 @@
 package gr.alx.common
 
+import io.micrometer.core.instrument.Gauge
+import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.observation.ObservationRegistry
 import io.micrometer.observation.aop.ObservedAspect
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.MDC
+import org.springframework.boot.actuate.health.HealthEndpoint
+import org.springframework.boot.actuate.health.Status
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.context.annotation.Bean
@@ -72,4 +76,31 @@ class CustomRequestLoggingFilter : CommonsRequestLoggingFilter() {
         if (request.requestURI.contains("/actuator")) return false
         return super.shouldLog(request)
     }
+}
+
+@Configuration(proxyBeanMethods = false)
+@EnableAutoConfiguration // only needed for intellij to not complain
+class MyHealthMetricsExportConfiguration(registry: MeterRegistry, healthEndpoint: HealthEndpoint) {
+
+    init {
+        // This example presumes common tags (such as the app) are applied elsewhere
+        Gauge.builder("health", healthEndpoint) { health ->
+            getStatusCode(health).toDouble()
+        }.strongReference(true).register(registry)
+    }
+
+    private fun getStatusCode(health: HealthEndpoint): Int {
+        val status = health.health().status
+        if (Status.UP == status) {
+            return 3
+        }
+        if (Status.OUT_OF_SERVICE == status) {
+            return 2
+        }
+        if (Status.DOWN == status) {
+            return 1
+        }
+        return 0
+    }
+
 }
