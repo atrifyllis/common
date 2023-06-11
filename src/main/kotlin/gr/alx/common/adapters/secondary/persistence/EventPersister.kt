@@ -29,7 +29,7 @@ class EventPersister(val repo: EventRepository, val tracer: Tracer) {
             payload = event,
             type = event.type,
             occurredOn = event.occurredOn,
-            tracingSpanContext = tracer.currentTraceContext().context().toTraceParentHeader()
+            tracingSpanContext = tracer.currentTraceContext().context().toProperties()
         )
         repo.save(persistedEventEntity)
         // this trick is used to save space.
@@ -50,8 +50,8 @@ private fun TraceContext?.toTraceParentHeader(): String {
 
 private fun TraceContext?.toProperties(): String {
     val properties = Properties()
-    properties.setProperty("traceId", this?.traceId())
-    properties.setProperty("spanId", this?.spanId())
+    properties.setProperty("uber-trace-id", "${this?.traceId()}:${this?.spanId()}:${this?.parentId()}:1")
+//    properties.setProperty("spanId", this?.spanId())
     StringWriter().use { sw ->
         properties.store(sw, null)
         val toString = sw.toString()
