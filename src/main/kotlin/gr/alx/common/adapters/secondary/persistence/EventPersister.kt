@@ -29,7 +29,7 @@ class EventPersister(val repo: EventRepository, val tracer: Tracer) {
             payload = event,
             type = event.type,
             occurredOn = event.occurredOn,
-            tracingSpanContext = tracer.currentTraceContext().context().toProperties()
+            tracingSpanContext = tracer.currentTraceContext().context().toB3Properties()
         )
         repo.save(persistedEventEntity)
         // this trick is used to save space.
@@ -52,6 +52,41 @@ private fun TraceContext?.toProperties(): String {
     val properties = Properties()
     properties.setProperty("uber-trace-id", "${this?.traceId()}:${this?.spanId()}:${this?.parentId()}:1")
 //    properties.setProperty("spanId", this?.spanId())
+    StringWriter().use { sw ->
+        properties.store(sw, null)
+        val toString = sw.toString()
+        println("writer: $toString")
+        println("toString: ${properties.toString()}")
+        return toString
+    }
+
+}
+
+const val TRACE_ID = "X-B3-TraceId"
+
+/**
+ * 64-bit span ID lower-hex encoded into 16 characters (required)
+ */
+const val SPAN_ID = "X-B3-SpanId"
+
+/**
+ * 64-bit parent span ID lower-hex encoded into 16 characters (absent on root span)
+ */
+const val PARENT_SPAN_ID = "X-B3-ParentSpanId"
+
+/**
+ * "1" means report this span to the tracing system, "0" means do not. (absent means defer the
+ * decision to the receiver of this header).
+ */
+const val SAMPLED = "X-B3-Sampled"
+private fun TraceContext?.toB3Properties(): String {
+    val properties = Properties()
+//    properties.setProperty("uber-trace-id", "${this?.traceId()}:${this?.spanId()}:${this?.parentId()}:1")
+//    properties.setProperty("spanId", this?.spanId())
+    properties.setProperty(TRACE_ID, this?.traceId())
+    properties.setProperty(SPAN_ID, this?.spanId())
+    properties.setProperty(PARENT_SPAN_ID, this?.parentId())
+    properties.setProperty(SAMPLED, "1")
     StringWriter().use { sw ->
         properties.store(sw, null)
         val toString = sw.toString()

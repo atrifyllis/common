@@ -1,17 +1,22 @@
 package gr.alx.common
 
+import brave.propagation.B3Propagation
+import brave.propagation.Propagation
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.observation.ObservationRegistry
 import io.micrometer.observation.aop.ObservedAspect
+import io.micrometer.tracing.brave.bridge.W3CPropagation
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.MDC
+import org.springframework.boot.actuate.autoconfigure.tracing.TracingProperties
 import org.springframework.boot.actuate.health.HealthEndpoint
 import org.springframework.boot.actuate.health.Status
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.core.Authentication
@@ -57,7 +62,11 @@ class MDCLoggingFilter : OncePerRequestFilter() {
         private const val USER_ID_MDC_KEY = "userId"
     }
 
-    override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
+    override fun doFilterInternal(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        filterChain: FilterChain
+    ) {
         try {
             val authentication: Authentication? = SecurityContextHolder.getContext().authentication
             if (authentication != null) {
@@ -101,6 +110,20 @@ class MyHealthMetricsExportConfiguration(registry: MeterRegistry, healthEndpoint
             return 1
         }
         return 0
+    }
+
+    /**
+     * Override auto-configured factory to use B3Propagation multi header format (deafult is single).
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    fun propagationFactory(tracing: TracingProperties): Propagation.Factory? {
+        return when (tracing.propagation.type.toString()) {
+            "B3" -> B3Propagation.newFactoryBuilder()
+                .injectFormat(B3Propagation.Format.MULTI).build()
+            "W3C" -> W3CPropagation()
+            else -> W3CPropagation()
+        }
     }
 
 }
