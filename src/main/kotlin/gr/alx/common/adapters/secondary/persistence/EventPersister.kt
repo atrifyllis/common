@@ -29,7 +29,7 @@ class EventPersister(val repo: EventRepository, val tracer: Tracer) {
             payload = event,
             type = event.type,
             occurredOn = event.occurredOn,
-            tracingSpanContext = tracer.currentTraceContext().context().toB3Properties()
+            tracingSpanContext = tracer.currentTraceContext().context().toW3CProperties()
         )
         repo.save(persistedEventEntity)
         // this trick is used to save space.
@@ -48,10 +48,25 @@ private fun TraceContext?.toTraceParentHeader(): String {
     return "00-$traceId-$spanId-01";
 }
 
-private fun TraceContext?.toProperties(): String {
+private fun TraceContext?.toJaegerProperties(): String {
     val properties = Properties()
     properties.setProperty("uber-trace-id", "${this?.traceId()}:${this?.spanId()}:${this?.parentId()}:1")
+    StringWriter().use { sw ->
+        properties.store(sw, null)
+        val toString = sw.toString()
+        println("writer: $toString")
+        println("toString: ${properties.toString()}")
+        return toString
+    }
+
+}
+
+private fun TraceContext?.toW3CProperties(): String {
+    val properties = Properties()
+//    properties.setProperty("traceId", this?.traceId())
 //    properties.setProperty("spanId", this?.spanId())
+
+    properties.setProperty("traceparent","00-${this?.traceId()}-${this?.spanId()}-01");
     StringWriter().use { sw ->
         properties.store(sw, null)
         val toString = sw.toString()
